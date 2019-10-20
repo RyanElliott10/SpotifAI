@@ -41,7 +41,7 @@ class Network:
 
         # serialize weights to HDF5
         self.model.save_weights("model.h5")
-        print("Saved model to disk")
+        print("\nSuccessfully saved model")
 
     def load_model(self):
         json_file = open('model.json', 'r')
@@ -50,7 +50,6 @@ class Network:
         self.model = model_from_json(loaded_model_json)
         # load weights into new model
         self.model.load_weights("model.h5")
-        print("Loaded model from disk")
 
 def main():
     network = Network()
@@ -60,6 +59,8 @@ def main():
         network.load_model()
         network.predict()
     else:
+        if sys.argv[1] == "-p":
+            print("Unable to find .json or .h5 file.", end=" ")
         print("Training new model")
         network.create_model()
         network.compile_model()
