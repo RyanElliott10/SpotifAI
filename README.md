@@ -14,10 +14,9 @@ Run `pip3 install -r requirements.txt` to install all used libraries.
 
 # Instructions
 Add two variables to `.bash_profile`:
-    * SPOTID (client id)
-    * SPOTPASS (client secret)
-    i.e.
-        * `export SPOTID=<your_client_id_here>`
-        * `export SPOTID=<your_client_secret_here>`
+* SPOTID (client id)
+   * `export SPOTID=<your_client_id_here>`
+* SPOTPASS (client secret)
+   * `export SPOTID=<your_client_secret_here>`
 
 # add me on linkedIn @Sean-Nesbit
