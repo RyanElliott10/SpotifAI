@@ -35,23 +35,28 @@ class Network:
         return self.prediction
 
     def save_model(self):
+        try:
+            os.mkdir("models/")
+        except OSError:
+            print("Unable to create models/ dir")
+
         model_json = self.model.to_json()
-        with open("model.json", "w") as json_file:
+        with open("models/model.json", "w") as json_file:
             json_file.write(model_json)
 
-        self.model.save_weights("model.h5")
+        self.model.save_weights("models/model.h5")
         print("\nSuccessfully saved model")
 
     def load_model(self):
-        with open("model.json", "r") as json_file:
+        with open("models/model.json", "r") as json_file:
             loaded_model_json = json_file.read()
             self.model = model_from_json(loaded_model_json)
-            self.model.load_weights("model.h5")
+            self.model.load_weights("models/model.h5")
 
 def main():
     network = Network()
     
-    if sys.argv[1] == "-p" and os.path.exists("model.json") and os.path.exists("model.h5"):
+    if sys.argv[1] == "-p" and os.path.exists("models/model.json") and os.path.exists("models/model.h5"):
         print("Using saved model")
         network.load_model()
         network.predict()
