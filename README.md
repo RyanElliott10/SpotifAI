@@ -17,7 +17,7 @@ Create a new file, `src/.env`, that will contain two keys (in JSON format):
 ```
 {
   "SPOTID": "<your_spotify_api_id_here>",
-  "SPOTPASS": "<your_spotify_api_secret_here>"
+  "SPOTSECRET": "<your_spotify_api_secret_here>"
 }
 ```
 
