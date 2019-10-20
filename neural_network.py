@@ -19,7 +19,7 @@ class Network:
         self.model.compile(loss='mean_squared_error', optimizer='adam', metrics=['binary_accuracy'])
 
     def train_model(self):
-        self.model.fit(training_data, target_data, epochs=1000, verbose=2)
+        self.model.fit(training_data, target_data, epochs=1000, verbose=1)
 
     def predict(self):
         self.prediction = self.model.predict(training_data)
