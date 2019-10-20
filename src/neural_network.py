@@ -25,10 +25,13 @@ class Network:
         self.prediction = self.model.predict(training_data)
         return self.prediction
 
-if __name__ == "__main__":
+def main():
     network = Network()
     network.create_model()
     network.compile_model()
     network.train_model()
     print("\nPrediction:")
     print(network.predict())
+
+if __name__ == "__main__":
+    main()
