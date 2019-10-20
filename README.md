@@ -13,10 +13,12 @@ spotipy==2.4.4
 Run `pip3 install -r requirements.txt` to install all used libraries.
 
 # Instructions
-Add two variables to `.bash_profile`:
-* SPOTID (client id)
-   * `export SPOTID=<your_client_id_here>`
-* SPOTPASS (client secret)
-   * `export SPOTID=<your_client_secret_here>`
+Create a new file, `.env`, in `src/` that will contain two keys (in JSON format):
+```
+{
+  "SPOTID": "<your_spotify_api_id_here>",
+  "SPOTPASS": "<your_spotify_api_secret_here>"
+}
+```
 
 # add me on linkedIn @Sean-Nesbit
