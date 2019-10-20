@@ -16,8 +16,8 @@ Run `pip3 install -r requirements.txt` to install all used libraries.
 Create a new file, `src/.env`, that will contain two keys (in JSON format):
 ```
 {
-  "SPOTID": "<your_spotify_api_id_here>",
-  "SPOTSECRET": "<your_spotify_api_secret_here>"
+  "CLIENT_ID": "<your_spotify_api_id_here>",
+  "CLIENT_SECRET": "<your_spotify_api_secret_here>"
 }
 ```
 
