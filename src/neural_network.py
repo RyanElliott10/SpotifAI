@@ -2,8 +2,8 @@ import numpy as np
 from keras.models import Sequential
 from keras.layers.core import Activation, Dense
 
-training_data = np.array([[0,0],[0,1],[1,0],[1,1]], "float32")
-target_data = np.array([[0],[1],[1],[0]], "float32")
+training_data = np.array([[0,0,0,1], [0,0,1,0], [0,1,0,0], [1,0,0,0]], "float32")
+target_data = np.array([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]], "float32")
 
 class Network:
 
@@ -11,9 +11,9 @@ class Network:
         self.model = Sequential()
 
     def create_model(self):
-        self.model.add(Dense(32, input_dim=2, activation='relu'))
+        self.model.add(Dense(32, input_dim=4, activation='relu'))
         self.model.add(Dense(16, input_dim=32, activation='relu'))
-        self.model.add(Dense(1, activation='sigmoid'))
+        self.model.add(Dense(4, activation='sigmoid'))
 
     def compile_model(self):
         self.model.compile(loss='mean_squared_error', optimizer='adam', metrics=['binary_accuracy'])
