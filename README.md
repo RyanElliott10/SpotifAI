@@ -21,4 +21,13 @@ Create a new file, `src/.env`, that will contain two keys (in JSON format):
 }
 ```
 
+# Usage
+There are two modes you can run `neural_network.py` in:
+* Using a pre-trained model
+* Training a new model
+
+To use a pre-trained model, run `python3 neural_network.py -p`. This option requires the existence of two files: `model.json` and `model.h5`.
+
+To train a new model (and generate the above required files), run `python3 neural_network -n`. This will train the model and create `model.json` and `model.h5` which can later be used as pre-trained models.
+
 # add me on linkedIn @Sean-Nesbit
