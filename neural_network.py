@@ -30,4 +30,5 @@ if __name__ == "__main__":
     network.create_model()
     network.compile_model()
     network.train_model()
+    print("\nPrediction:")
     print(network.predict())
