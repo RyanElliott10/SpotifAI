@@ -4,6 +4,9 @@ from keras.models import Sequential
 from keras.layers.core import Activation, Dense
 from keras.models import model_from_json
 
+# Hush hush, TensorFlow
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 training_data = np.array([[0,0,0,1], [0,0,1,0], [0,1,0,0], [1,0,0,0], [1,0,0,1], [0,0,1,1], [0,1,1,0]], "float32")
 target_data = np.array([[1,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1], [1,0,0,1], [1,1,0,0], [0,1,1,0]], "float32")
 
@@ -24,7 +27,7 @@ class Network:
         self.model.compile(loss='mean_squared_error', optimizer='adam', metrics=['binary_accuracy'])
 
     def train_model(self):
-        self.model.fit(training_data, target_data, epochs=300, verbose=1)
+        self.model.fit(training_data, target_data, epochs=300, verbose=3)
 
     def predict(self):
         self.prediction = self.model.predict(test_data)
