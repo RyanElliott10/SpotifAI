@@ -1,4 +1,5 @@
 import os
+import sys
 import numpy as np
 from keras.models import Sequential
 from keras.layers.core import Activation, Dense
@@ -19,7 +20,7 @@ class Network:
         self.model = Sequential()
 
     def create_model(self):
-        self.model.add(Dense(32, input_dim=4, activation='relu'))
+        self.model.add(Dense(32, input_dim=4, activation='tanh'))
         self.model.add(Dense(16, input_dim=32, activation='relu'))
         self.model.add(Dense(4, activation='sigmoid'))
 
@@ -37,6 +38,7 @@ class Network:
         model_json = self.model.to_json()
         with open("model.json", "w") as json_file:
             json_file.write(model_json)
+
         # serialize weights to HDF5
         self.model.save_weights("model.h5")
         print("Saved model to disk")
@@ -53,7 +55,7 @@ class Network:
 def main():
     network = Network()
     
-    if os.path.exists("model.json") and os.path.exists("model.h5"):
+    if sys.argv[1] == "-p" and os.path.exists("model.json") and os.path.exists("model.h5"):
         print("Using saved model")
         network.load_model()
         network.predict()
@@ -68,4 +70,10 @@ def main():
     print(network.predict())
 
 if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("\033[91mUsage:\033[0m python3 neural_network.py <model_options>\n\033[93mUse python3 neural_network.py help for more information\033[0m")
+        exit()
+    elif sys.argv[1] == "help":
+        print("\033[93mHelp:\033[0m Use -n to train a new model, use -p to use a pre-trained model (requires .h5 file)")
+        exit()
     main()
