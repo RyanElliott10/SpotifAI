@@ -39,17 +39,14 @@ class Network:
         with open("model.json", "w") as json_file:
             json_file.write(model_json)
 
-        # serialize weights to HDF5
         self.model.save_weights("model.h5")
         print("\nSuccessfully saved model")
 
     def load_model(self):
-        json_file = open('model.json', 'r')
-        loaded_model_json = json_file.read()
-        json_file.close()
-        self.model = model_from_json(loaded_model_json)
-        # load weights into new model
-        self.model.load_weights("model.h5")
+        with open("model.json", "r") as json_file:
+            loaded_model_json = json_file.read()
+            self.model = model_from_json(loaded_model_json)
+            self.model.load_weights("model.h5")
 
 def main():
     network = Network()
