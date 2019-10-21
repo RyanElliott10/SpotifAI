@@ -4,15 +4,27 @@ import numpy as np
 from keras.models import Sequential
 from keras.layers.core import Activation, Dense
 from keras.models import model_from_json
+from data_generator import *
 
 # Hush hush, TensorFlow
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-training_data = np.array([[0,0,0,1], [0,0,1,0], [0,1,0,0], [1,0,0,0], [1,0,0,1], [0,0,1,1], [0,1,1,0]], "float32")
-target_data = np.array([[1,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1], [1,0,0,1], [1,1,0,0], [0,1,1,0]], "float32")
+# This is absolutely disgusting, but it shall do (for now)
+reverse = Reverse()
+reverse.generate_all()
+training_data = np.array(reverse.train_data)
+target_data = np.array(reverse.target_data)
 
-test_data = np.array([[1,0,0,1], [0,0,1,1], [0,1,1,0]])
-target_test_data = np.array([[1,0,0,1], [1,1,0,0], [0,1,1,0]])
+test_data = np.array([[1,0,0,1], [0,0,1,1], [0,1,1,0], [1,1,1,1]])
+target_test_data = np.array([[1,0,0,1], [1,1,0,0], [0,1,1,0], [1,1,1,1]])
+
+xor = XOR()
+xor.generate_all()
+training_data = np.array(xor.train_data)
+target_data = np.array(xor.target_data)
+
+test_data = np.array([[0,0], [0,1], [1,0], [1,1]])
+target_test_data = np.array([[0], [1], [1], [0]])
 
 class Network:
 
@@ -20,15 +32,15 @@ class Network:
         self.model = Sequential()
 
     def create_model(self):
-        self.model.add(Dense(32, input_dim=4, activation='tanh'))
+        self.model.add(Dense(32, input_dim=2, activation='tanh'))
         self.model.add(Dense(16, input_dim=32, activation='relu'))
-        self.model.add(Dense(4, activation='sigmoid'))
+        self.model.add(Dense(1, activation='sigmoid'))
 
     def compile_model(self):
         self.model.compile(loss='mean_squared_error', optimizer='adam', metrics=['binary_accuracy'])
 
     def train_model(self):
-        self.model.fit(training_data, target_data, epochs=300, verbose=3)
+        self.model.fit(training_data, target_data, epochs=10, verbose=1)
 
     def predict(self):
         self.prediction = self.model.predict(test_data)
@@ -71,6 +83,8 @@ def main():
 
     print("\nPrediction:")
     print(network.predict())
+    print("\nDiff")
+    print(target_test_data - network.prediction)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
