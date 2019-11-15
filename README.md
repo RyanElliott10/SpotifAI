@@ -31,4 +31,4 @@ To use a pre-trained model, run `python3 neural_network.py -p`. This option requ
 
 To train a new model (and generate the above required files), run `python3 neural_network -n`. This will train the model and create `model.json` and `model.h5` which can later be used as pre-trained models.
 
-# add me on linkedIn @Sean-Nesbit
+# Add us on linkedIn @RyanElliott-10, @Sean-Nesbit
