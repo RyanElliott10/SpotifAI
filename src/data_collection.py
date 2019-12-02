@@ -16,7 +16,8 @@ if len(sys.argv) > 1:
 else:
     name = 'Radiohead'
 
-results = spotify.search(q='artist:' + name, type='artist')
+#results = spotify.search(q='artist:' + name, type='artist')
+results = spotify.search(q='')
 items = results['artists']['items']
 if len(items) > 0:
     artist = items[0]

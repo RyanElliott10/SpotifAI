@@ -1,7 +1,6 @@
 import random
 
 class Reverse:
-
     def __init__(self):
         self.train_data = []
         self.target_data = []
@@ -20,9 +19,7 @@ class Reverse:
             self.target_data.append(v[::-1])
 
 
-
 class XOR:
-
     def __init__(self):
         self.train_data = []
         self.target_data = []
