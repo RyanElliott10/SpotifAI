@@ -7,8 +7,10 @@ from objects.song import *
 
 AUDIO_FEATURES_BATCH_SIZE = 100
 OFFSET_SIZE = 50
+SCOPE = 'user-library-read'
 
-def get_raw_features(song_ids):
+
+def get_raw_features(song_ids, sp):
     raw_features = []
     prev_index = 0
     next_index = AUDIO_FEATURES_BATCH_SIZE
@@ -25,25 +27,8 @@ def get_raw_features(song_ids):
 
     return raw_features
 
-scope = 'user-library-read'
-
-if len(sys.argv) > 1:
-    user_count = len(sys.argv) - 1
-    user_list = []
-    for i in range(0, user_count):
-        user_list.append(sys.argv[i+1])
-else:
-    print("Usage: python3 pull_library.py username ...")
-    sys.exit(0)
-
-for username in user_list:
-    token = util.prompt_for_user_token(username, scope, redirect_uri='http://localhost/')
-    if token is None:
-        print("Bad token")
-        sys.exit(1)
-
+def get_tracks(token, sp):
     tracks = []
-    sp = spotipy.Spotify(auth=token)
     i = 0
     print("Fetching data from Spotify")
     results = {'items' : []}
@@ -52,25 +37,55 @@ for username in user_list:
         for item in results['items']:
             tracks.append(item['track'])
         i += OFFSET_SIZE
+    
+    return tracks
 
+def get_song_ids(tracks):
     song_ids = []
-    songs = []
     for track in tracks:
         song_id = track["id"]
         song_ids.append(song_id)
 
-    raw_features = get_raw_features(song_ids)
-    print(len(tracks))
-    assert len(raw_features) == len(tracks)
-    features = []
+    return song_ids
 
+def parse_into_songs(raw_features, tracks):
+    songs = []
     for i, f in enumerate(raw_features):
         song_features = SongAudioFeatures(f)
-        features.append(song_features)
         song = Song(song_features)
         song.name = tracks[i]["name"]
         songs.append(song)
+    
+    return songs
 
-    # YEET I got all the songs and features
-    for song in songs:
-        print(song.features.acousticness, song.name, song.features.uri)
+def main():
+    user_count = len(sys.argv) - 1
+    user_list = []
+    for i in range(0, user_count):
+        user_list.append(sys.argv[i+1])
+
+    for username in user_list:
+        token = util.prompt_for_user_token(username, SCOPE, redirect_uri='http://localhost/')
+        if token is None:
+            print("Bad token")
+            sys.exit(1)
+
+        sp = spotipy.Spotify(auth=token)
+        
+        tracks = get_tracks(token, sp)
+        song_ids = get_song_ids(tracks)
+        raw_features = get_raw_features(song_ids, sp)
+        
+        assert len(raw_features) == len(tracks)
+
+        songs = parse_into_songs(raw_features, tracks)
+
+        for song in songs:
+            print(song.features.acousticness, song.name, song.features.uri)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) <= 1:
+        print("Usage: python3 pull_library.py username ...")
+        sys.exit(0)
+    main()
