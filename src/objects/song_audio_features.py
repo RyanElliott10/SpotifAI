@@ -1,5 +1,6 @@
 class SongAudioFeatures:
     def __init__(self, raw_data):
+        self.raw_data = raw_data
         self.danceability = raw_data["danceability"]
         self.energy = raw_data["energy"]
         self.key = raw_data["key"]
