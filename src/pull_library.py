@@ -82,7 +82,6 @@ def scrub_genres(songs):
     
     return songs
 
-
 def main():
     user_count = len(sys.argv) - 1
     user_list = []

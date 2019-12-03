@@ -11,13 +11,13 @@ import data_generator
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 # This is absolutely disgusting, but it shall do (for now)
-reverse = data_generator.Reverse()
-reverse.generate_all()
-training_data = np.array(reverse.train_data)
-target_data = np.array(reverse.target_data)
+# reverse = data_generator.Reverse()
+# reverse.generate_all()
+# training_data = np.array(reverse.train_data)
+# target_data = np.array(reverse.target_data)
 
-test_data = np.array([[1,0,0,1], [0,0,1,1], [0,1,1,0], [1,1,1,1]])
-target_test_data = np.array([[1,0,0,1], [1,1,0,0], [0,1,1,0], [1,1,1,1]])
+# test_data = np.array([[1,0,0,1], [0,0,1,1], [0,1,1,0], [1,1,1,1]])
+# target_test_data = np.array([[1,0,0,1], [1,1,0,0], [0,1,1,0], [1,1,1,1]])
 
 xor = data_generator.XOR()
 xor.generate_all()
