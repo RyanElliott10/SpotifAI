@@ -28,7 +28,6 @@ test_data = np.array([[0,0], [0,1], [1,0], [1,1]])
 target_test_data = np.array([[0], [1], [1], [0]])
 
 class Network:
-
     def __init__(self):
         self.model = Sequential()
 
