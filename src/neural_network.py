@@ -63,8 +63,8 @@ class Network:
         self.model.save_weights("models/model.h5")
         print("\nSuccessfully saved model")
 
-    def load_model(self):
-        with open("models/model.json", "r") as json_file:
+    def load_model(self, json_path, h5_path):
+        with open(json_path, "r") as json_file:
             loaded_model_json = json_file.read()
             self.model = model_from_json(loaded_model_json)
             self.model.load_weights("models/model.h5")
@@ -75,15 +75,17 @@ def validate_predictions(network):
     expected = processor.get_validation_output_data()
     for (i, val) in enumerate(prediction):
         print(prediction[i], "\n", expected[i], "\n")
-    # print(expected)
-    # print(prediction)
 
 def main():
     network = Network()
     
-    if sys.argv[1] == "-p" and os.path.exists("models/model.json") and os.path.exists("models/model.h5"):
-        print("Using saved model")
-        network.load_model()
+    if sys.argv[1] == "-p" and os.path.exists("models/prod_model.json") and os.path.exists("models/prod_model.h5"):
+        print("Using saved prod model")
+        network.load_model("models/prod_model.json", "models/prod_model.h5")
+        validate_predictions(network)
+    elif sys.argv[1] == "-o" and os.path.exists("models/model.json") and os.path.exists("models/model.h5"):
+        print("Using saved old model")
+        network.load_model("models/model.json", "models/model.h5")
         validate_predictions(network)
     else:
         if sys.argv[1] == "-p":
