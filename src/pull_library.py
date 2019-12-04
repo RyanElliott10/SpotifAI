@@ -9,8 +9,8 @@ from objects.song import *
 AUDIO_FEATURES_BATCH_SIZE = 100
 OFFSET_SIZE = 50
 SCOPE = 'user-library-read'
-GENRE_PRECEDNECES = ["country", "metal", "alternative", "rap", "edm", "indie",
-                     "jazz", "pop", "lo-fi", "rock", "classical"]
+GENRE_PRECEDNECES = ["country", "metal", "alternative", "rap", "edm", "jazz",
+                     "pop", "rock", "classical"]
 
 
 def get_raw_features(song_ids, sp):
@@ -123,6 +123,7 @@ def main():
     print("Successfully converted dictionaries into dataframes.")
     print("\nWriting to CSV...")
     export_csv = df.to_csv('features.csv', header=True)
+
 
 if __name__ == "__main__":
     if len(sys.argv) <= 1:

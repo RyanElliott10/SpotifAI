@@ -1,20 +1,23 @@
 import numpy as np
 import pandas as pd
+import random
 from keras.utils import to_categorical
 
 from pull_library import GENRE_PRECEDNECES
 
-DATA_THRESHOLD = 1000
+DATA_THRESHOLD = 1700
 
 class DataPreprocessor:
     def __init__(self):
         self.all_input_data = []
         self.all_output_data = []
+        self.raw_csv_data = pd.read_csv("features.csv").sample(frac=1)
+        print(self.raw_csv_data)
 
     def reduce_data(self, raw_data):
         # Removed index, song title, and various features not used as input
         raw_data.drop(raw_data.columns[0], axis=1, inplace=True)
-        return raw_data.drop(columns=["name", "mode", "type", "id", "uri", "track_href", "analysis_url", "duration_ms"])
+        return raw_data.drop(columns=["name", "mode", "key", "type", "id", "uri", "track_href", "analysis_url", "duration_ms"])
 
     def _get_input_data(self, data):
         # Only change is making time_siganture one-hot
@@ -32,31 +35,60 @@ class DataPreprocessor:
         self.all_input_data = np.append(data, one_hot, axis=1)
 
     def get_input_data(self):
-        raw_csv_data = pd.read_csv("features.csv")
-        reduced = self.reduce_data(raw_csv_data)
+        reduced = self.reduce_data(self.raw_csv_data.copy())
         self._get_input_data(reduced)
+        # Gotta figure out a way to randomize the data
+        # random.shuffle(self.all_input_data) 
+
         return self.all_input_data[:DATA_THRESHOLD]
 
     # These need to be one encoded
     def get_output_data(self):
-        raw_csv_data = pd.read_csv("features.csv").to_numpy()
+        raw_csv_data = self.raw_csv_data.to_numpy()
         raw_labels = raw_csv_data.T[2]
         numerical_labels = []
         for label in raw_labels:
             numerical_labels.append(GENRE_PRECEDNECES.index(label))
+
+        # numpy_arr = self.raw_csv_data.to_numpy()
+        # raw_labels = numpy_arr.T[2]
+        # numerical_labels = []
+        # for label in raw_labels:
+            # numerical_labels.append(GENRE_PRECEDNECES.index(label))
 
         one_hot = to_categorical(numerical_labels)
         self.all_output_data = one_hot
         return self.all_output_data[:DATA_THRESHOLD]
 
     def get_validation_input_data(self):
+        self.get_input_data()
         return self.all_input_data[DATA_THRESHOLD:]
 
     def get_validation_output_data(self):
+        self.get_output_data()
         return self.all_output_data[DATA_THRESHOLD:]
 
 
+def get_genre_counts():
+    raw_csv_data = pd.read_csv("features.csv")
+    genre_counts = {
+        "country" : 0,
+        "metal" : 0,
+        "alternative" : 0,
+        "rap" : 0,
+        "edm" : 0,
+        "jazz" : 0,
+        "pop" : 0,
+        "rock" : 0,
+        "classical" : 0
+    }
+    for el in raw_csv_data["genre"]:
+        genre_counts[el] += 1
+    print(genre_counts)
+
+
 if __name__ == "__main__":
+    get_genre_counts()
     processor = DataPreprocessor()
     print("input_data/features:\n", processor.get_input_data())
     print("\noutput_data/labels:\n", processor.get_output_data())
