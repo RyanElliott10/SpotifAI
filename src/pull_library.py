@@ -33,7 +33,7 @@ def get_raw_features(song_ids, sp):
 def get_tracks(token, sp):
     tracks = []
     i = 0
-    print("Fetching data from Spotify")
+    print("Fetching data from Spotify...")
     results = {'items' : []}
     while len(results['items']) >= OFFSET_SIZE or i == 0:
         results = sp.current_user_saved_tracks(limit=OFFSET_SIZE, offset=i)
@@ -56,7 +56,8 @@ def parse_into_songs(raw_features, tracks, sp):
     songs = []
     for i, f in enumerate(raw_features):
         if i % 100 == 0:
-            print(i, "/", len(raw_features))
+            print("\r", i, "/", len(raw_features), "songs processed")
+            time.sleep(1)
         song_features = SongAudioFeatures(f)
         song = Song(song_features)
         song.name = tracks[i]["name"]
@@ -79,8 +80,6 @@ def scrub_genres(songs):
             if found:
                 found = False
                 break
-    
-    return songs
 
 def main():
     user_count = len(sys.argv) - 1
@@ -105,7 +104,7 @@ def main():
     songs = parse_into_songs(raw_features, tracks, sp)
     scrub_genres(songs)
     print("\nSuccessfully scrubbed all the songs.")
-    print("Converting to dataframes and writing to CSV...")
+    print("\nConverting to dataframes...")
 
     songs = [s for s in songs if not isinstance(s.genre, list)]
     big_dict = {
@@ -121,6 +120,8 @@ def main():
             big_dict[k].append(v)
 
     df = pd.DataFrame.from_dict(big_dict, orient='index').T
+    print("Successfully converted dictionaries into dataframes.")
+    print("\nWriting to CSV...")
     export_csv = df.to_csv('features.csv', header=True)
 
 if __name__ == "__main__":

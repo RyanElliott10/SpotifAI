@@ -2,48 +2,48 @@ import os
 import sys
 import numpy as np
 from keras.models import Sequential
-from keras.layers.core import Activation, Dense
+from keras import optimizers
+from keras.layers.core import Activation, Dense, Flatten
+from keras.layers import Conv1D, MaxPooling1D
 from keras.models import model_from_json
 
 import data_generator
+import preprocess_data
 
 # Hush hush, TensorFlow
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+np.set_printoptions(suppress=True)
 
-# This is absolutely disgusting, but it shall do (for now)
-# reverse = data_generator.Reverse()
-# reverse.generate_all()
-# training_data = np.array(reverse.train_data)
-# target_data = np.array(reverse.target_data)
+processor = preprocess_data.DataPreprocessor()
+training_input_data = processor.get_input_data()
+training_target_data = processor.get_output_data()
 
-# test_data = np.array([[1,0,0,1], [0,0,1,1], [0,1,1,0], [1,1,1,1]])
-# target_test_data = np.array([[1,0,0,1], [1,1,0,0], [0,1,1,0], [1,1,1,1]])
+print(training_input_data)
 
-xor = data_generator.XOR()
-xor.generate_all()
-training_data = np.array(xor.train_data)
-target_data = np.array(xor.target_data)
+validation_input_data = processor.get_validation_input_data()
+validation_target_data = processor.get_validation_output_data()
 
-test_data = np.array([[0,0], [0,1], [1,0], [1,1]])
-target_test_data = np.array([[0], [1], [1], [0]])
 
 class Network:
     def __init__(self):
         self.model = Sequential()
 
     def create_model(self):
-        self.model.add(Dense(32, input_dim=2, activation='tanh'))
-        self.model.add(Dense(16, input_dim=32, activation='relu'))
-        self.model.add(Dense(1, activation='sigmoid'))
+        self.model.add(Dense(32, input_dim=len(training_input_data[0]), activation='relu'))
+        self.model.add(Dense(128, input_dim=32, activation='sigmoid'))
+        self.model.add(Dense(64, input_dim=128, activation='relu'))
+        self.model.add(Dense(64, input_dim=64, activation='sigmoid'))
+        self.model.add(Dense(11, input_dim=64, activation='sigmoid'))
 
     def compile_model(self):
-        self.model.compile(loss='mean_squared_error', optimizer='adam', metrics=['binary_accuracy'])
+        adam = optimizers.Adam(lr=1e-3, decay=1e-6)
+        self.model.compile(loss='mean_squared_error', optimizer=adam, metrics=['accuracy'])
 
     def train_model(self):
-        self.model.fit(training_data, target_data, epochs=10, verbose=1)
+        self.model.fit(training_input_data, training_target_data, epochs=1000, verbose=1)
 
     def predict(self):
-        self.prediction = self.model.predict(test_data)
+        self.prediction = self.model.predict(validation_input_data)
         return self.prediction
 
     def save_model(self):
@@ -65,6 +65,7 @@ class Network:
             self.model = model_from_json(loaded_model_json)
             self.model.load_weights("models/model.h5")
 
+
 def main():
     network = Network()
     
@@ -81,10 +82,31 @@ def main():
         network.train_model()
         network.save_model()
 
+    print(network.model.summary())
+    print("\nSEEN DATA")
+    print("\nInput:")
+    print(training_input_data[len(validation_input_data)-1])
+    print("\nActual:")
+    actual = training_target_data[len(validation_target_data)-1]
+    print(actual)
     print("\nPrediction:")
-    print(network.predict())
+    prediction = network.predict()[len(validation_target_data)-1]
+    print(prediction)
     print("\nDiff")
-    print(target_test_data - network.prediction)
+    print(actual - prediction)
+
+    print("\n\nUNSEEN DATA")
+    print("\nInput:")
+    print(validation_input_data[len(validation_input_data)-1])
+    print("\nActual:")
+    actual = validation_target_data[len(validation_target_data)-1]
+    print(actual)
+    print("\nPrediction:")
+    prediction = network.predict()[len(validation_target_data)-1]
+    print(prediction)
+    print("\nDiff")
+    print(actual - prediction)
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
