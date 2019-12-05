@@ -7,11 +7,11 @@ from keras.utils import to_categorical
 from pull_library import GENRE_PRECEDNECES
 
 DATA_THRESHOLD = 0
-CSV_FILENAME = "data/sean.csv"
+CSV_FILENAME = "data/training_data.csv"
 
 
 class DataPreprocessor:
-    def __init__(self):
+    def __init__(self, csv_name):
         self.all_input_data = []
         self.all_output_data = []
         self.raw_csv_data = pd.read_csv(CSV_FILENAME).sample(frac=1)

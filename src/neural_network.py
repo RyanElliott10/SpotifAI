@@ -13,13 +13,14 @@ CONFIDENCE_THRESHOLD = 0.6
 CULMINATE_GENRE = "pop"
 CULMINATE_GENRE_LIST = []
 USE_MODEL = "model"
+USE_CSV = "data/training_data.csv"
 
 # Hush hush, TensorFlow
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 np.set_printoptions(suppress=True)
 np.set_printoptions(threshold=sys.maxsize)
 
-processor = preprocess_data.DataPreprocessor()
+processor = preprocess_data.DataPreprocessor(USE_CSV)
 training_input_data = processor.get_input_data()
 training_target_data = processor.get_output_data()
 
@@ -144,8 +145,11 @@ def in_depth_validate_predictions(network, verbose=False):
     print("MISSLABELLED GENRES:", genre_counts)
 
     print("\nPREDICTED SONGS")
+    uri_list = []
     for s in CULMINATE_GENRE_LIST:
         print(f"{s[2]}\t{s[1]}")
+        uri_list.append(s[16])
+    print(uri_list)
 
 def main():
     network = Network()
@@ -191,4 +195,5 @@ if __name__ == "__main__":
         USE_MODEL = sys.argv[2]
     if len(sys.argv) == 4:
         CULMINATE_GENRE = sys.argv[3]
+
     main()
