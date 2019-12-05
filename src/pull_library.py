@@ -124,7 +124,6 @@ def main():
     print("\nWriting to CSV...")
     export_csv = df.to_csv('features.csv', header=True)
 
-
 if __name__ == "__main__":
     if len(sys.argv) <= 1:
         print("Usage: python3 pull_library.py username ...")
