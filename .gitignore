@@ -2,5 +2,5 @@
 __pycache__/
 *DS_Store
 .cache-*
-sean.csv
-charlie.csv
+src/data/sean.csv
+src/data/charlie.csv

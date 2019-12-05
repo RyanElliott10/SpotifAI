@@ -7,7 +7,7 @@ from keras.utils import to_categorical
 from pull_library import GENRE_PRECEDNECES
 
 DATA_THRESHOLD = 0
-CSV_FILENAME = "sean.csv"
+CSV_FILENAME = "data/sean.csv"
 
 
 class DataPreprocessor:

@@ -122,7 +122,7 @@ def main():
     df = pd.DataFrame.from_dict(big_dict, orient='index').T
     print("Successfully converted dictionaries into dataframes.")
     print("\nWriting to CSV...")
-    export_csv = df.to_csv('features.csv', mode='a', header=True)
+    export_csv = df.to_csv('data/features.csv', mode='a', header=True)
 
 if __name__ == "__main__":
     if len(sys.argv) <= 1:
