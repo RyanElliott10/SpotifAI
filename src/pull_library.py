@@ -32,10 +32,11 @@ def get_raw_features(song_ids, sp):
 
 def get_tracks(token, sp):
     tracks = []
-    i = 0
+    START_NDX = 2000
+    i = START_NDX
     print("Fetching data from Spotify...")
     results = {'items' : []}
-    while len(results['items']) >= OFFSET_SIZE or i == 0:
+    while (len(results['items']) >= OFFSET_SIZE or i == START_NDX) and i < 4000:
         results = sp.current_user_saved_tracks(limit=OFFSET_SIZE, offset=i)
         for item in results['items']:
             tracks.append(item['track'])
@@ -122,7 +123,7 @@ def main():
     df = pd.DataFrame.from_dict(big_dict, orient='index').T
     print("Successfully converted dictionaries into dataframes.")
     print("\nWriting to CSV...")
-    export_csv = df.to_csv('features.csv', header=True)
+    export_csv = df.to_csv('features.csv', mode='a', header=True)
 
 if __name__ == "__main__":
     if len(sys.argv) <= 1:

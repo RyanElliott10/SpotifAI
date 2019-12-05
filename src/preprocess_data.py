@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import pandas as pd
 import random
@@ -6,7 +7,7 @@ from keras.utils import to_categorical
 from pull_library import GENRE_PRECEDNECES
 
 DATA_THRESHOLD = 0
-CSV_FILENAME = "features.csv"
+CSV_FILENAME = "chunga.csv"
 
 
 class DataPreprocessor:
@@ -78,6 +79,8 @@ def get_genre_counts():
     return genre_counts
 
 if __name__ == "__main__":
+    if (len(sys.argv) == 2):
+        CSV_FILENAME = sys.argv[1]
     print(get_genre_counts())
     # processor = DataPreprocessor()
     # print("input_data/features:\n", processor.get_input_data())

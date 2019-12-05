@@ -12,7 +12,7 @@ from pull_library import GENRE_PRECEDNECES
 
 CONFIDENCE_THRESHOLD = 0.6
 CULMINATE_GENRE = "pop"
-CULMINATE_GENRE_NAMES = []
+CULMINATE_GENRE_LIST = []
 USE_MODEL = "model"
 
 # Hush hush, TensorFlow
@@ -34,14 +34,15 @@ class Network:
 
     def create_model(self):
         self.model.add(Dense(16, input_dim=len(training_input_data[0]), activation='relu'))
-        self.model.add(Dense(64, input_dim=16, activation='softmax'))
+        self.model.add(Dense(64, input_dim=16, activation='relu'))
         self.model.add(Dense(128, input_dim=64, activation='relu'))
         self.model.add(Dense(256, input_dim=128, activation='relu'))
-        self.model.add(Dense(128, input_dim=256, activation='relu'))
+        self.model.add(Dense(512, input_dim=256, activation='relu'))
+        self.model.add(Dense(128, input_dim=512, activation='relu'))
         self.model.add(Dense(64, input_dim=128, activation='relu'))
         self.model.add(Dense(32, input_dim=64, activation='relu'))
         self.model.add(Dense(16, input_dim=32, activation='relu'))
-        self.model.add(Dense(len(GENRE_PRECEDNECES), input_dim=16, activation='relu'))
+        self.model.add(Dense(len(GENRE_PRECEDNECES), input_dim=16, activation='sigmoid'))
 
     def compile_model(self):
         adam = optimizers.Adam(lr=1e-3, decay=1e-6)
@@ -98,8 +99,6 @@ def in_depth_validate_predictions(network, verbose=False):
     misslabeled_count = 0
     num_low_confidence = 0
 
-    print(prediction)
-
     for (i, val) in enumerate(prediction):
         expected_index = 0
         largest = 0
@@ -119,7 +118,7 @@ def in_depth_validate_predictions(network, verbose=False):
             num_low_confidence += 1
             continue
         elif GENRE_PRECEDNECES[prediction_index] == CULMINATE_GENRE:
-            CULMINATE_GENRE_NAMES.append(processor.raw_csv_data.to_numpy()[i][1])
+            CULMINATE_GENRE_LIST.append(processor.raw_csv_data.to_numpy()[i])
         
         # Determine accuracy
         if prediction_index != expected_index:
@@ -134,7 +133,7 @@ def in_depth_validate_predictions(network, verbose=False):
     
     num_correct = len(prediction) - misslabeled_count - num_low_confidence
     print(f"\nFOR GENRE {CULMINATE_GENRE}")
-    print("\tNUM TO BE ADDED TO PLAYLIST:", len(CULMINATE_GENRE_NAMES))
+    print("\tNUM TO BE ADDED TO PLAYLIST:", len(CULMINATE_GENRE_LIST))
 
     print("\nNUM MISSLABELLED:", misslabeled_count)
     print("NUM CORRECT:", num_correct)
@@ -146,20 +145,20 @@ def in_depth_validate_predictions(network, verbose=False):
     print("MISSLABELLED GENRES:", genre_counts)
 
     print("\nPREDICTED SONGS")
-    for s in CULMINATE_GENRE_NAMES:
-        print(s)
+    for s in CULMINATE_GENRE_LIST:
+        print(f"{s[2]}\t{s[1]}")
 
 def main():
     network = Network()
 
     if sys.argv[1] == "-p":
         print("Using saved prod model")
-        network.load_model("models/87.json", "models/87.h5")
-        in_depth_validate_predictions(network, True)
+        network.load_model("models/prod.json", "models/prod.h5")
+        in_depth_validate_predictions(network)
     elif sys.argv[1] == "-o":
         print("Using saved old model")
         network.load_model(f"models/{USE_MODEL}.json", f"models/{USE_MODEL}.h5")
-        in_depth_validate_predictions(network, True)
+        in_depth_validate_predictions(network)
     else:
         if sys.argv[1] == "-p":
             print("Unable to find .json or .h5 file.", end=" ")
