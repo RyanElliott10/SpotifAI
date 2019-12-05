@@ -6,7 +6,6 @@ from keras import optimizers
 from keras.layers.core import Activation, Dense, Flatten
 from keras.models import model_from_json
 
-import data_generator
 import preprocess_data
 from pull_library import GENRE_PRECEDNECES
 
