@@ -32,11 +32,10 @@ def get_raw_features(song_ids, sp):
 
 def get_tracks(token, sp):
     tracks = []
-    START_NDX = 2000
-    i = START_NDX
+    i = 0
     print("Fetching data from Spotify...")
     results = {'items' : []}
-    while (len(results['items']) >= OFFSET_SIZE or i == START_NDX) and i < 4000:
+    while len(results['items']) >= OFFSET_SIZE or i == 0:
         results = sp.current_user_saved_tracks(limit=OFFSET_SIZE, offset=i)
         for item in results['items']:
             tracks.append(item['track'])

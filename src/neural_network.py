@@ -180,7 +180,6 @@ def main():
         print("\nDiff")
         print(actual - prediction)
 
-
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("\033[91mUsage:\033[0m python3 neural_network.py < model_options > < model_to_use > < genre_to_predict >\n\033[93mUse python3 neural_network.py help for more information\033[0m")
