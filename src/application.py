@@ -15,9 +15,9 @@ def init_data(user):
     path = 'data/' + user + '.csv'
     if os.path.exists(path) == False:
         pull_library.main(mode=1, profile=user)
-    user_library = pd.read_csv(path)
+
     processor = preprocess_data.DataPreprocessor(path)
-    user_data = processor.get_input_data()
+    user_data = processor.get_validation_output_data()
 
     return np.asarray(user_data)
 
