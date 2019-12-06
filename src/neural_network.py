@@ -8,12 +8,13 @@ from keras.models import model_from_json
 
 import preprocess_data
 from pull_library import GENRE_PRECEDNECES
+from push_to_playlist import add_to_playlist
 
 CONFIDENCE_THRESHOLD = 0.6
 CULMINATE_GENRE = "pop"
 CULMINATE_GENRE_LIST = []
 USE_MODEL = "model"
-USE_CSV = "data/training_data.csv"
+USE_CSV = "data/sean.csv"
 
 # Hush hush, TensorFlow
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -149,7 +150,8 @@ def in_depth_validate_predictions(network, verbose=False):
     for s in CULMINATE_GENRE_LIST:
         print(f"{s[2]}\t{s[1]}")
         uri_list.append(s[16])
-    print(uri_list)
+    add_to_playlist(sys.argv[4], sys.argv[5], uri_list)
+    # add_to_playlist("ryan.elliott31", "spotify:playlist:71lTKjIGEG7CAUlaHESQND", uri_list)
 
 def main():
     network = Network()
@@ -193,7 +195,7 @@ if __name__ == "__main__":
 
     if len(sys.argv) >= 3:
         USE_MODEL = sys.argv[2]
-    if len(sys.argv) == 4:
+    if len(sys.argv) >= 4:
         CULMINATE_GENRE = sys.argv[3]
 
     main()
