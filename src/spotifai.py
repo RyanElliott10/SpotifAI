@@ -24,6 +24,7 @@ def main(filename):
     neural_network.USE_CSV = prefs["data_csv"]
     neural_network.SPOTIFY_USERNAME = prefs["username"]
     neural_network.PLAYLIST_URIS = prefs["playlist_uris"]
+    
     neural_network.in_depth_validate_predictions(neural_network.Network())
 
 if __name__ == "__main__":
