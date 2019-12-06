@@ -110,7 +110,6 @@ def in_depth_validate_predictions(network, verbose=False):
 
     for (k, g) in enumerate(CULMINATE_GENRES):
         CULMINATE_GENRE_LIST = []
-        print(prediction)
         for (i, val) in enumerate(prediction):
             expected_index = 0
             largest = 0
