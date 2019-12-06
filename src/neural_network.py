@@ -21,7 +21,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 np.set_printoptions(suppress=True)
 np.set_printoptions(threshold=sys.maxsize)
 
-processor = preprocess_data.DataPreprocessor(USE_CSV)
+processor = preprocess_data.DataPreprocessor("data/cschnelz.csv")
 #training_input_data = processor.get_input_data()
 #training_target_data = processor.get_output_data()
 

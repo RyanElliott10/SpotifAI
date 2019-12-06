@@ -17,7 +17,7 @@ def init_data(user):
         pull_library.main(mode=1, profile=user)
 
     processor = preprocess_data.DataPreprocessor(path)
-    user_data = processor.get_validation_output_data()
+    user_data = processor.get_validation_input_data()
 
     return np.asarray(user_data)
 

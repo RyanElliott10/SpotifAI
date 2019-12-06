@@ -14,7 +14,7 @@ class DataPreprocessor:
     def __init__(self, csv_name):
         self.all_input_data = []
         self.all_output_data = []
-        self.raw_csv_data = pd.read_csv(CSV_FILENAME).sample(frac=1)
+        self.raw_csv_data = pd.read_csv(csv_name).sample(frac=1)
 
     def reduce_data(self, raw_data):
         # Removed index, song title, and various features not used as input
@@ -39,6 +39,7 @@ class DataPreprocessor:
     def get_input_data(self):
         reduced = self.reduce_data(self.raw_csv_data.copy())
         self._get_input_data(reduced)
+
         return self.all_input_data[:DATA_THRESHOLD]
 
     def get_output_data(self):
