@@ -1,0 +1,16 @@
+{
+	"model_name" : "demo_model",
+	"confidence_threshold" : 0.6,
+	"data_csv" : "data/sean.csv",
+	"username" : "ryan.elliott31",
+	"playlist_uris" : [
+		"spotify:playlist:20zOot6FsRhUM8S7WL8V9L",
+		"spotify:playlist:5dt1N7RbcG1aSL8iJRgEdr",
+		"spotify:playlist:4TR5MHo4y2lSxGKrojR40h"
+	],
+	"genres" : [
+		"rap",
+		"alternative",
+		"rock"
+	]
+}

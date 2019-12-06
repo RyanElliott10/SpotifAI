@@ -10,11 +10,13 @@ import preprocess_data
 from pull_library import GENRE_PRECEDNECES
 from push_to_playlist import add_to_playlist
 
-CONFIDENCE_THRESHOLD = 0.6
-CULMINATE_GENRE = "pop"
+CONFIDENCE_THRESHOLD = 0.0
+CULMINATE_GENRES = ""
 CULMINATE_GENRE_LIST = []
-USE_MODEL = "model"
-USE_CSV = "data/sean.csv"
+USE_MODEL = ""
+USE_CSV = "data/training_data.csv"
+SPOTIFY_USERNAME = ""
+PLAYLIST_URIS = []
 
 # Hush hush, TensorFlow
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -22,11 +24,8 @@ np.set_printoptions(suppress=True)
 np.set_printoptions(threshold=sys.maxsize)
 
 processor = preprocess_data.DataPreprocessor(USE_CSV)
-training_input_data = processor.get_input_data()
-training_target_data = processor.get_output_data()
-
-validation_input_data = processor.get_validation_input_data()
-validation_target_data = processor.get_validation_output_data()
+training_input_data = []
+training_target_data = []
 
 
 class Network:
@@ -34,7 +33,7 @@ class Network:
         self.model = Sequential()
 
     def create_model(self):
-        self.model.add(Dense(16, input_dim=len(training_input_data[0]), activation='relu'))
+        self.model.add(Dense(16, input_dim=len(processor.get_input_data()[0]), activation='relu'))
         self.model.add(Dense(64, input_dim=16, activation='relu'))
         self.model.add(Dense(128, input_dim=64, activation='relu'))
         self.model.add(Dense(256, input_dim=128, activation='relu'))
@@ -50,6 +49,8 @@ class Network:
         self.model.compile(loss='logcosh', optimizer=adam, metrics=['accuracy'])
 
     def train_model(self):
+        training_input_data = processor.get_input_data()
+        training_target_data = processor.get_output_data()
         self.model.fit(training_input_data, training_target_data, epochs=1000, verbose=1)
 
     def predict(self, data):
@@ -77,6 +78,8 @@ class Network:
 
 
 def validate_predictions(network):
+    validation_input_data = processor.get_validation_input_data()
+    validation_target_data = processor.get_validation_output_data()
     prediction = network.predict(validation_input_data)
     expected = processor.get_validation_output_data()
     for (i, val) in enumerate(prediction):
@@ -95,63 +98,70 @@ def in_depth_validate_predictions(network, verbose=False):
         "rock" : 0,
         "classical" : 0
     }
+
+    network.load_model(f"models/{USE_MODEL}.json", f"models/{USE_MODEL}.h5")
+    processor = preprocess_data.DataPreprocessor(USE_CSV)
+    validation_input_data = processor.get_validation_input_data()
+
     prediction = network.predict(validation_input_data)
     expected = processor.get_validation_output_data()
     misslabeled_count = 0
     num_low_confidence = 0
 
-    for (i, val) in enumerate(prediction):
-        expected_index = 0
-        largest = 0
-        for (j, v) in enumerate(expected[i]):
-            if v > largest:
-                largest = v
-                expected_index = j
-        largest = 0
-        prediction_index = 0
-        for (j, v) in enumerate(prediction[i]):
-            if v > largest:
-                largest = v
-                prediction_index = j
+    for (k, g) in enumerate(CULMINATE_GENRES):
+        CULMINATE_GENRE_LIST = []
+        for (i, val) in enumerate(prediction):
+            expected_index = 0
+            largest = 0
+            for (j, v) in enumerate(expected[i]):
+                if v > largest:
+                    largest = v
+                    expected_index = j
+            largest = 0
+            prediction_index = 0
+            for (j, v) in enumerate(prediction[i]):
+                if v > largest:
+                    largest = v
+                    prediction_index = j
 
-        # If its confidence is too low, skip it
-        if largest < CONFIDENCE_THRESHOLD:
-            num_low_confidence += 1
-            continue
-        elif GENRE_PRECEDNECES[prediction_index] == CULMINATE_GENRE:
-            CULMINATE_GENRE_LIST.append(processor.raw_csv_data.to_numpy()[i])
+            # If the confidence is too low, skip it
+            if largest < CONFIDENCE_THRESHOLD:
+                num_low_confidence += 1
+                continue
+            elif GENRE_PRECEDNECES[prediction_index] == g:
+                CULMINATE_GENRE_LIST.append(processor.raw_csv_data.to_numpy()[i])
+            
+            # Determine accuracy
+            if prediction_index != expected_index:
+                misslabeled_count += 1
+                if verbose:
+                    print(f"Song name: {processor.raw_csv_data.to_numpy()[i][1]}")
+                    print(f"Guessed: {GENRE_PRECEDNECES[prediction_index]}, expected: {GENRE_PRECEDNECES[expected_index]}")
+                    print(expected[i])
+                    print(prediction[i], "\n")
+                correct_genre = GENRE_PRECEDNECES[expected_index]
+                genre_counts[correct_genre] += 1
         
-        # Determine accuracy
-        if prediction_index != expected_index:
-            misslabeled_count += 1
-            if verbose:
-                print(f"Song name: {processor.raw_csv_data.to_numpy()[i][1]}")
-                print(f"Guessed: {GENRE_PRECEDNECES[prediction_index]}, expected: {GENRE_PRECEDNECES[expected_index]}")
-                print(expected[i])
-                print(prediction[i], "\n")
-            correct_genre = GENRE_PRECEDNECES[expected_index]
-            genre_counts[correct_genre] += 1
-    
-    num_correct = len(prediction) - misslabeled_count - num_low_confidence
-    print(f"\nFOR GENRE {CULMINATE_GENRE}")
-    print("\tNUM TO BE ADDED TO PLAYLIST:", len(CULMINATE_GENRE_LIST))
+        num_correct = len(prediction) - misslabeled_count - num_low_confidence
+        print(f"\nFOR GENRE {g}")
+        print("\tNUM TO BE ADDED TO PLAYLIST:", len(CULMINATE_GENRE_LIST))
 
-    print("\nNUM MISSLABELLED:", misslabeled_count)
-    print("NUM CORRECT:", num_correct)
-    print("TOTAL SONGS:", len(prediction))
-    print(f"NUM IGNORED DUE TO LOW CONFIDENCE: {num_low_confidence}")
-    print("VALIDATION ACCURACY (WITH HIGH CONFIDENCE):", 100 * num_correct / (len(prediction) - num_low_confidence))
+        print("\nNUM MISSLABELLED:", misslabeled_count)
+        print("NUM CORRECT:", num_correct)
+        print("TOTAL SONGS:", len(prediction))
+        print(f"NUM IGNORED DUE TO LOW CONFIDENCE: {num_low_confidence}")
+        print("VALIDATION ACCURACY (WITH HIGH CONFIDENCE):", 100 * num_correct / (len(prediction) - num_low_confidence))
 
-    print("\nTOTAL GENRE COUNTS:", preprocess_data.get_genre_counts())
-    print("MISSLABELLED GENRES:", genre_counts)
+        preprocess_data.CSV_FILENAME = USE_CSV
+        print("\nTOTAL GENRE COUNTS:", preprocess_data.get_genre_counts())
+        print("MISSLABELLED GENRES:", genre_counts)
 
-    print("\nPREDICTED SONGS")
-    uri_list = []
-    for s in CULMINATE_GENRE_LIST:
-        print(f"{s[2]}\t{s[1]}")
-        uri_list.append(s[16])
-    add_to_playlist(sys.argv[4], sys.argv[5], uri_list)
-    # add_to_playlist("ryan.elliott31", "spotify:playlist:71lTKjIGEG7CAUlaHESQND", uri_list)
+        print("\nPREDICTED SONGS")
+        uri_list = []
+        for s in CULMINATE_GENRE_LIST:
+            print(f"{s[2]}\t{s[1]}")
+            uri_list.append(s[16])
+        add_to_playlist(SPOTIFY_USERNAME, PLAYLIST_URIS[k], uri_list)
 
 def main():
     network = Network()
@@ -165,8 +175,11 @@ def main():
         network.load_model(f"models/{USE_MODEL}.json", f"models/{USE_MODEL}.h5")
         in_depth_validate_predictions(network)
     else:
+        validation_input_data = processor.get_validation_input_data()
+        validation_target_data = processor.get_validation_output_data()
         if sys.argv[1] == "-p":
             print("Unable to find .json or .h5 file.", end=" ")
+        preprocess_data.DATA_THRESHOLD = 5000
         print("Training new model")
         network.create_model()
         network.compile_model()
