@@ -81,7 +81,7 @@ def scrub_genres(songs):
                 found = False
                 break
 
-def main():
+def main(mode=0,profile=""):
     user_count = len(sys.argv) - 1
     user_list = []
     for i in range(0, user_count):
@@ -119,10 +119,16 @@ def main():
         for (k, v) in song.get_dict().items():
             big_dict[k].append(v)
 
-    df = pd.DataFrame.from_dict(big_dict, orient='index').T
-    print("Successfully converted dictionaries into dataframes.")
-    print("\nWriting to CSV...")
-    export_csv = df.to_csv('data/training_data.csv', mode='a', header=True)
+    if mode != 0:
+        df = pd.DataFrame.from_dict(big_dict, orient='index').T
+        print("Successfully converted dictionaries into dataframes.")
+        print("\nWriting to username CSV...")
+        export_csv = df.to_csv('data/'+profile+'.csv', mode='a', header=True)
+    else:
+        df = pd.DataFrame.from_dict(big_dict, orient='index').T
+        print("Successfully converted dictionaries into dataframes.")
+        print("\nWriting to CSV...")
+        export_csv = df.to_csv('data/charlie.csv', mode='a', header=True)
 
 if __name__ == "__main__":
     if len(sys.argv) <= 1:

@@ -22,11 +22,11 @@ np.set_printoptions(suppress=True)
 np.set_printoptions(threshold=sys.maxsize)
 
 processor = preprocess_data.DataPreprocessor(USE_CSV)
-training_input_data = processor.get_input_data()
-training_target_data = processor.get_output_data()
+#training_input_data = processor.get_input_data()
+#training_target_data = processor.get_output_data()
 
-validation_input_data = processor.get_validation_input_data()
-validation_target_data = processor.get_validation_output_data()
+#validation_input_data = processor.get_validation_input_data()
+#validation_target_data = processor.get_validation_output_data()
 
 
 class Network:
